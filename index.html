@@ -123,10 +123,36 @@ td.r,th.r{text-align:right;white-space:nowrap}
 .rtable td.cmt{max-width:170px}
 .rtable td.acts{width:78px;padding-right:2px}
 .rtable tbody tr:hover{background:var(--accent-soft)}
-.rcards{display:none}
-.rcards .card{padding:12px 14px}
-.rcards .trow{border:0;padding:0}
-@media (max-width:760px){ .rtable-card{display:none} .rcards{display:block} }
+
+/* report: event sections */
+.rsec{overflow:hidden;margin-bottom:16px}
+.rsec-head{display:flex;gap:14px;align-items:flex-start;padding:14px;background:var(--accent-soft);border-bottom:1px solid var(--line)}
+.rsec-head .datebox{background:var(--card)}
+.rsec-info{flex:1;min-width:0}
+.rsec-title{font-family:'Cormorant Garamond',serif;font-size:23px;line-height:1.15;margin:0 0 4px;color:var(--accent)}
+.rsec-desc{font-size:13px;margin-top:6px;white-space:pre-wrap}
+.rsec-head .mini{background:var(--card)}
+.rsec-head .mini.bad{background:var(--bad-soft)}
+.rsec-add{flex:none}
+.rsec .rtable-wrap{padding:0}
+.rsec .rtable th{background:var(--card)}
+.rsec .rtable th:first-child,.rsec .rtable td:first-child{padding-left:14px}
+.rtable tr.subtotal td{font-weight:600;background:var(--bg);border-bottom:0;cursor:default}
+.rtable tbody tr.subtotal:hover{background:var(--bg)}
+.rsec-cards{display:none;padding:0 14px}
+.rsec-none{padding:14px;color:var(--muted);font-size:13.5px}
+.rgrand{padding:14px}
+.rgrand-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--accent);margin-bottom:8px}
+.rgrand-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:8px}
+.rgrand-grid div{background:var(--bg);border-radius:10px;padding:8px 10px}
+.rgrand-grid span{display:block;font-size:12px;color:var(--muted)}
+.rgrand-grid b{font-size:17px}
+@media (max-width:760px){
+  .rsec-table{display:none} .rsec-cards{display:block}
+  .rsec-head{flex-wrap:wrap;gap:12px}
+  .rsec-info{flex:1 1 calc(100% - 72px)}
+  .rsec-add{order:3;width:100%}
+}
 
 /* summary */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
@@ -182,7 +208,18 @@ td.r,th.r{text-align:right;white-space:nowrap}
   main{padding:0;max-width:none}
   #view-events,#view-summary{display:none!important}
   #view-report{display:block!important}
-  .rtable-card{display:block!important} .rcards{display:none!important}
+  .rsec-table{display:block!important} .rsec-cards{display:none!important}
+  .rsec{border:1px solid #ccc;border-radius:8px;margin-bottom:14px;break-inside:auto}
+  .rsec-head{background:#f6e9ef!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:avoid}
+  .rtable tr{break-inside:avoid}
+  .rgrand{border:1px solid #ccc;break-inside:avoid}
+  html,body{background:#fff!important}
+  .rtable-wrap{overflow:visible!important}
+  .rtable{font-size:10.5px;table-layout:auto}
+  .rtable th,.rtable td{padding:5px 4px!important}
+  .rtable .status{font-size:9.5px;padding:1px 5px}
+  .rtable td.cmt{max-width:none}
+  main{padding-bottom:0!important}
   .print-only{display:block;font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:6px}
   th{position:static}
 }
@@ -571,36 +608,80 @@ function renderReport(){
         '<button class="btn btn-sm" id="rPrint">Print / PDF</button>' +
       '</div>' +
     '</div>' +
-    '<div class="print-only">RS Wedding Event Tasks — '+esc(title)+' ('+new Date().toLocaleDateString('en-US')+')</div>' +
-    '<div class="rtotals">' +
-      '<span class="mini">'+list.length+' task'+(list.length === 1 ? '' : 's')+'</span>' +
-      '<span class="mini">'+t.done+' completed</span>' +
-      (t.overdue ? '<span class="mini bad">'+t.overdue+' overdue</span>' : '') +
-      '<span class="mini">Amount '+money(t.amount)+'</span>' +
-      '<span class="mini">Paid '+money(t.paid)+'</span>' +
-      '<span class="mini">Balance '+money(t.balance)+'</span>' +
-    '</div>' +
-    (list.length ?
-      '<div class="card rtable-card"><div class="rtable-wrap"><table class="rtable"><thead><tr>' +
-        '<th>Event</th><th>Task</th><th>Person Responsible</th><th>Vendor</th><th>Vendor Contact</th><th>Due</th>' +
-        '<th class="r">Amount</th><th class="r">Paid</th><th class="r">Balance</th><th>Status</th><th>Comments</th><th class="no-print"></th>' +
-      '</tr></thead><tbody>' +
-      list.map(function(x){
-        var ev = eventById(x.eventId);
-        return '<tr data-task="'+esc(x.id)+'">' +
-          '<td>'+esc(ev ? ev.name : '')+'</td><td><b>'+esc(x.task)+'</b></td><td>'+esc(x.responsible)+'</td><td>'+esc(x.vendorName)+'</td>' +
-          '<td>'+contactLink(x.vendorContact)+'</td><td style="white-space:nowrap">'+esc(fmtDate(x.dueDate, true))+'</td>' +
-          '<td class="r">'+money(x.amount)+'</td><td class="r">'+money(x.paid)+'</td><td class="r">'+money(num(x.amount) - num(x.paid))+'</td>' +
-          '<td>'+statusBadges(x)+'</td><td class="cmt">'+esc(x.comments)+'</td>' +
-          '<td class="no-print acts" style="white-space:nowrap"><span class="racts" style="margin:0"><button class="ract" data-edittask="'+esc(x.id)+'" aria-label="Edit task">✎</button><button class="ract del" data-deltask="'+esc(x.id)+'" aria-label="Delete task">🗑</button></span></td>' +
-        '</tr>';
-      }).join('') +
-      '<tr><td colspan="6"><b>Total</b></td><td class="r"><b>'+money(t.amount)+'</b></td><td class="r"><b>'+money(t.paid)+'</b></td><td class="r"><b>'+money(t.balance)+'</b></td><td colspan="3" class="hint">Cancelled excluded</td></tr>' +
-      '</tbody></table></div></div>' +
-      '<div class="rcards">' + list.map(function(x){ return '<div class="card">'+taskRowHtml(x, true)+'</div>'; }).join('') + '</div>'
-    : '<div class="empty"><div class="big">'+(state.tasks.length ? 'No matching tasks' : 'No tasks yet')+'</div>'+(state.tasks.length ? 'Try clearing a filter.' : (state.events.length ? 'Tap “+ Add Task” to add one.' : 'Add an event first, then add tasks to it.'))+'</div>');
+    '<div class="print-only">RS Wedding Event Tasks — '+esc(title)+' <span class="hint">('+new Date().toLocaleDateString('en-US')+')</span></div>' +
+    reportSectionsHtml(list, t);
 
   if(focus){ var s = $('rQ'); s.focus(); try{ s.setSelectionRange(caret, caret); }catch(e){} }
+}
+
+/* Report grouped by event: event header + its tasks + subtotal, then a grand total */
+function reportSectionsHtml(list, grand){
+  var taskFiltered = ['task','vendor','person','status'].some(function(k){ return rf[k] !== 'All'; }) || !!rf.q;
+  var byEvent = {}; list.forEach(function(x){ (byEvent[x.eventId] = byEvent[x.eventId] || []).push(x); });
+  var evs = sortEvents(state.events).filter(function(e){
+    if(rf.event !== 'All' && e.id !== rf.event) return false;
+    return taskFiltered ? !!byEvent[e.id] : true;
+  });
+  if(!evs.length){
+    return '<div class="empty"><div class="big">'+(state.tasks.length ? 'No matching tasks' : (state.events.length ? 'No tasks yet' : 'No events yet'))+'</div>'+
+      (state.tasks.length ? 'Try clearing a filter.' : (state.events.length ? 'Tap “+ Add Task” to add one.' : 'Add an event first, then add tasks to it.'))+'</div>';
+  }
+  var sections = evs.map(function(e){
+    var ts = byEvent[e.id] || [];
+    var st = totals(ts);
+    var dt = parseDate(e.date);
+    var allForEvent = tasksFor(e.id).length;
+    return '<section class="card rsec">' +
+      '<div class="rsec-head">' +
+        '<div class="datebox">' + (dt
+          ? '<div class="m">'+dt.toLocaleDateString('en-US',{month:'short'})+'</div><div class="d">'+dt.getDate()+'</div><div class="w">'+dt.toLocaleDateString('en-US',{weekday:'short'})+'</div>'
+          : '<div class="m">TBD</div><div class="d">–</div>') + '</div>' +
+        '<div class="rsec-info">' +
+          '<h3 class="rsec-title">'+esc(e.name)+'</h3>' +
+          '<div class="meta">' + (e.date ? '<span>📅 '+esc(fmtDate(e.date))+'</span>' : '<span>📅 Date TBD</span>') + (e.time ? '<span>🕒 '+esc(fmtTime(e.time))+'</span>' : '') +
+            (e.location ? '<span>📍 '+esc(e.location)+'</span>' : '') + (e.planner ? '<span>👤 Planner: '+esc(e.planner)+'</span>' : '') + '</div>' +
+          (e.description ? '<div class="rsec-desc">'+esc(e.description)+'</div>' : '') +
+          '<div class="ev-stats">' +
+            '<span class="mini">'+(taskFiltered && ts.length !== allForEvent ? ts.length+' of '+allForEvent+' tasks shown' : st.done+'/'+ts.length+' tasks done')+'</span>' +
+            (st.overdue ? '<span class="mini bad">'+st.overdue+' overdue</span>' : '') +
+            (st.amount || st.paid ? '<span class="mini">Amount '+money(st.amount)+'</span><span class="mini">Paid '+money(st.paid)+'</span><span class="mini">Balance '+money(st.balance)+'</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<button class="btn btn-sm no-print rsec-add" data-addtask="'+esc(e.id)+'">+ Task</button>' +
+      '</div>' +
+      (ts.length ?
+        '<div class="rsec-table"><div class="rtable-wrap"><table class="rtable"><thead><tr>' +
+          '<th>Task</th><th>Person Responsible</th><th>Vendor</th><th>Vendor Contact</th><th>Due</th>' +
+          '<th class="r">Amount</th><th class="r">Paid</th><th class="r">Balance</th><th>Status</th><th>Comments</th><th class="no-print"></th>' +
+        '</tr></thead><tbody>' +
+        ts.map(function(x){
+          return '<tr data-task="'+esc(x.id)+'">' +
+            '<td><b>'+esc(x.task)+'</b></td><td>'+esc(x.responsible)+'</td><td>'+esc(x.vendorName)+'</td>' +
+            '<td>'+contactLink(x.vendorContact)+'</td><td style="white-space:nowrap">'+esc(fmtDate(x.dueDate, true))+'</td>' +
+            '<td class="r">'+money(x.amount)+'</td><td class="r">'+money(x.paid)+'</td><td class="r">'+money(num(x.amount) - num(x.paid))+'</td>' +
+            '<td>'+statusBadges(x)+'</td><td class="cmt">'+esc(x.comments)+'</td>' +
+            '<td class="no-print acts" style="white-space:nowrap"><span class="racts" style="margin:0"><button class="ract" data-edittask="'+esc(x.id)+'" aria-label="Edit task">✎</button><button class="ract del" data-deltask="'+esc(x.id)+'" aria-label="Delete task">🗑</button></span></td>' +
+          '</tr>';
+        }).join('') +
+        '<tr class="subtotal"><td colspan="5">Subtotal — '+esc(e.name)+'</td><td class="r">'+money(st.amount)+'</td><td class="r">'+money(st.paid)+'</td><td class="r">'+money(st.balance)+'</td><td colspan="3"></td></tr>' +
+        '</tbody></table></div></div>' +
+        '<div class="rsec-cards">' + ts.map(function(x){ return taskRowHtml(x, false); }).join('') + '</div>'
+      : '<div class="rsec-none">No tasks for this event yet.</div>') +
+    '</section>';
+  }).join('');
+  return sections +
+    '<div class="card rgrand">' +
+      '<div class="rgrand-title">Grand total'+(evs.length > 1 ? ' · '+evs.length+' events' : '')+'</div>' +
+      '<div class="rgrand-grid">' +
+        '<div><span>Tasks</span><b>'+grand.count+'</b></div>' +
+        '<div><span>Completed</span><b>'+grand.done+'</b></div>' +
+        '<div><span>Overdue</span><b'+(grand.overdue ? ' style="color:var(--bad)"' : '')+'>'+grand.overdue+'</b></div>' +
+        '<div><span>Amount</span><b>'+money(grand.amount)+'</b></div>' +
+        '<div><span>Paid</span><b style="color:var(--ok)">'+money(grand.paid)+'</b></div>' +
+        '<div><span>Balance</span><b style="color:var(--warn)">'+money(grand.balance)+'</b></div>' +
+      '</div>' +
+      '<div class="hint">Cancelled tasks are excluded from money totals.</div>' +
+    '</div>';
 }
 
 function exportCsv(){
