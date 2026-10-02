@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Wedding Task Planner</title>
+<title>RS Wedding Event Tasks</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Wedding Planner">
+<meta name="apple-mobile-web-app-title" content="RS Wedding Event Tasks">
 <meta name="theme-color" content="#7a2e4f">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%237a2e4f'/%3E%3Ccircle cx='40' cy='55' r='18' fill='none' stroke='%23e9c46a' stroke-width='7'/%3E%3Ccircle cx='60' cy='55' r='18' fill='none' stroke='%23fff' stroke-width='7'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -35,18 +35,19 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* header */
 header.top{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(safe-area-inset-top) + 12px) 16px 0;border-bottom:1px solid var(--line)}
-.top-row{display:flex;align-items:center;justify-content:space-between;gap:8px;max-width:1100px;margin:0 auto}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:8px;max-width:1240px;margin:0 auto}
 h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;margin:0;color:var(--accent);letter-spacing:.3px}
+@media (max-width:480px){ header.top h1{font-size:23px;line-height:1.1} }
 .top-right{display:flex;align-items:center;gap:6px}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:5px 10px;border-radius:99px;background:var(--grey-soft);color:var(--muted);border:0;cursor:pointer}
 .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .pill.ok .dot{background:var(--ok)} .pill.busy .dot{background:var(--gold);animation:pulse 1s infinite} .pill.err .dot{background:var(--bad)}
 @keyframes pulse{50%{opacity:.3}}
 .icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:17px}
-.tabs{display:flex;gap:4px;max-width:1100px;margin:10px auto 0}
+.tabs{display:flex;gap:4px;max-width:1240px;margin:10px auto 0}
 .tab{flex:1;padding:10px 0;border:0;background:none;cursor:pointer;color:var(--muted);font-weight:600;border-bottom:2.5px solid transparent}
 .tab.active{color:var(--accent);border-color:var(--accent)}
-main{max-width:1100px;margin:0 auto;padding:16px 16px calc(env(safe-area-inset-bottom) + 96px)}
+main{max-width:1240px;margin:0 auto;padding:16px 16px calc(env(safe-area-inset-bottom) + 96px)}
 
 /* cards */
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-bottom:12px}
@@ -103,7 +104,7 @@ main{max-width:1100px;margin:0 auto;padding:16px 16px calc(env(safe-area-inset-b
 
 /* report */
 .filters{padding:14px}
-.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
 .fgrid label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:3px}
 .fgrid select,.fgrid input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:15px}
 .fgrid select.on{border-color:var(--accent);background:var(--accent-soft)}
@@ -117,6 +118,10 @@ th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--line);vertic
 th{color:var(--muted);font-weight:600;font-size:12px;white-space:nowrap;position:sticky;top:0;background:var(--card)}
 td.r,th.r{text-align:right;white-space:nowrap}
 .rtable tbody tr{cursor:pointer}
+.rtable th,.rtable td{padding:9px 6px}
+.rtable a,td a{color:var(--accent);text-decoration:none}
+.rtable td.cmt{max-width:170px}
+.rtable td.acts{width:78px;padding-right:2px}
 .rtable tbody tr:hover{background:var(--accent-soft)}
 .rcards{display:none}
 .rcards .card{padding:12px 14px}
@@ -187,7 +192,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
 
 <!-- ================= SETUP ================= -->
 <div id="setup" class="hidden">
-  <h1>Wedding Task Planner</h1>
+  <h1>RS Wedding Event Tasks</h1>
   <div class="sub">Connect to your Google Sheet — one-time setup, about 2 minutes.</div>
   <div class="card section">
     <ol>
@@ -212,7 +217,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
 <div id="app" class="hidden">
   <header class="top">
     <div class="top-row">
-      <h1>Wedding Planner</h1>
+      <h1>RS Wedding Event Tasks</h1>
       <div class="top-right">
         <button class="pill" id="syncPill" title="Tap to refresh"><span class="dot"></span><span id="syncText">—</span></button>
         <button class="icon-btn" id="btnSettings" title="Settings" aria-label="Settings">⚙</button>
@@ -417,7 +422,7 @@ function confirmBox(opts, onYes){
   $('cNo').onclick = close;
   $('cOverlay').onclick = function(e){ if(e.target.id === 'cOverlay') close(); };
   $('cYes').onclick = function(){ close(); onYes(); };
-  setTimeout(function(){ $('cNo').focus(); }, 30);
+  $('cNo').focus();
 }
 function askDeleteTask(id, after){
   var t = taskById(id); if(!t) return;
@@ -566,7 +571,7 @@ function renderReport(){
         '<button class="btn btn-sm" id="rPrint">Print / PDF</button>' +
       '</div>' +
     '</div>' +
-    '<div class="print-only">Wedding Task Planner — '+esc(title)+' ('+new Date().toLocaleDateString('en-US')+')</div>' +
+    '<div class="print-only">RS Wedding Event Tasks — '+esc(title)+' ('+new Date().toLocaleDateString('en-US')+')</div>' +
     '<div class="rtotals">' +
       '<span class="mini">'+list.length+' task'+(list.length === 1 ? '' : 's')+'</span>' +
       '<span class="mini">'+t.done+' completed</span>' +
@@ -586,8 +591,8 @@ function renderReport(){
           '<td>'+esc(ev ? ev.name : '')+'</td><td><b>'+esc(x.task)+'</b></td><td>'+esc(x.responsible)+'</td><td>'+esc(x.vendorName)+'</td>' +
           '<td>'+contactLink(x.vendorContact)+'</td><td style="white-space:nowrap">'+esc(fmtDate(x.dueDate, true))+'</td>' +
           '<td class="r">'+money(x.amount)+'</td><td class="r">'+money(x.paid)+'</td><td class="r">'+money(num(x.amount) - num(x.paid))+'</td>' +
-          '<td>'+statusBadges(x)+'</td><td>'+esc(x.comments)+'</td>' +
-          '<td class="no-print" style="white-space:nowrap"><span class="racts" style="margin:0"><button class="ract" data-edittask="'+esc(x.id)+'" aria-label="Edit task">✎</button><button class="ract del" data-deltask="'+esc(x.id)+'" aria-label="Delete task">🗑</button></span></td>' +
+          '<td>'+statusBadges(x)+'</td><td class="cmt">'+esc(x.comments)+'</td>' +
+          '<td class="no-print acts" style="white-space:nowrap"><span class="racts" style="margin:0"><button class="ract" data-edittask="'+esc(x.id)+'" aria-label="Edit task">✎</button><button class="ract del" data-deltask="'+esc(x.id)+'" aria-label="Delete task">🗑</button></span></td>' +
         '</tr>';
       }).join('') +
       '<tr><td colspan="6"><b>Total</b></td><td class="r"><b>'+money(t.amount)+'</b></td><td class="r"><b>'+money(t.paid)+'</b></td><td class="r"><b>'+money(t.balance)+'</b></td><td colspan="3" class="hint">Cancelled excluded</td></tr>' +
@@ -695,7 +700,7 @@ function eventForm(ev){
         saveEvent({ id:ev.id, name:name, location:$('fLoc').value.trim(), description:$('fDesc').value.trim(), date:date, time:$('fTime').value, planner:$('fPlanner').value.trim() }, isNew);
         closeModal(); toast(isNew ? 'Event added' : 'Event updated');
       };
-      if(isNew) setTimeout(function(){ $('fName').focus(); }, 50);
+      if(isNew) $('fName').focus();
     }
   );
 }
@@ -755,7 +760,7 @@ function taskForm(t, presetEventId){
         openEvents[evId] = true; lsSet(LS.open, openEvents);
         closeModal(); toast(isNew ? 'Task added' : 'Task updated');
       };
-      if(isNew) setTimeout(function(){ $('tTask').focus(); }, 50);
+      if(isNew) $('tTask').focus();
     }
   );
 }
